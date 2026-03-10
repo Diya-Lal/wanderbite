@@ -1,6 +1,6 @@
 [build]
   command = "npm exec nx build destinations -- --configuration=production"
-  publish = "../../dist/apps/destinations"
+  publish = "dist/apps/destinations"
 
 [build.environment]
   NODE_ENV = "production"
