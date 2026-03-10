@@ -188,6 +188,21 @@ $white-faint: rgba(255, 255, 255, 0.3);
     pointer-events: none;
     z-index: 10;
   }
+
+  &__spinner {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid rgba(201, 169, 110, 0.25);
+    border-top-color: $gold;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+  }
 }
 
 // ── PrimNG AutoComplete overrides ─────────────────────────
@@ -276,21 +291,23 @@ $white-faint: rgba(255, 255, 255, 0.3);
     flex: 1;
   }
 
-  &__country {
-    font-size: 0.75rem;
+  &__display {
+    font-size: 0.72rem;
     font-weight: 300;
-    color: $white-dim;
+    color: $white-faint;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
   }
+}
 
-  &__region {
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: $gold;
-    padding: 0.2rem 0.5rem;
-    border: 1px solid rgba(201,169,110,0.3);
-  }
+.ds-ac-empty {
+  padding: 1rem 1.25rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.8rem;
+  color: $white-faint;
+  text-align: center;
 }
 
 // ── Featured section ──────────────────────────────────────
@@ -443,6 +460,10 @@ $white-faint: rgba(255, 255, 255, 0.3);
 }
 
 // ── Keyframes ─────────────────────────────────────────────
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }

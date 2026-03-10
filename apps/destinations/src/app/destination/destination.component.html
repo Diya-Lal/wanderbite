@@ -1,5 +1,4 @@
 <div class="wb-dark ds-page">
-
   <!-- ── Navbar ── -->
   <nav class="ds-nav">
     <a class="ds-nav__brand" routerLink="/homepage">
@@ -8,7 +7,11 @@
     </a>
     <ul class="ds-nav__links">
       <li>
-        <a routerLink="/destination" routerLinkActive="active" class="ds-nav__link">
+        <a
+          routerLink="/destination"
+          routerLinkActive="active"
+          class="ds-nav__link"
+        >
           Destinations
         </a>
       </li>
@@ -24,36 +27,52 @@
         <span></span>Where do you want to go?<span></span>
       </p>
       <h1 class="ds-header__title">Explore <em>Destinations</em></h1>
-      <p class="ds-header__subtitle">
-        Search among hundreds of curated destinations around the world
-      </p>
+      <p class="ds-header__subtitle">Search any city in the world</p>
 
       <!-- ── Search ── -->
       <div class="ds-search">
+        @if (searching) {
+          <div class="ds-search__spinner"></div>
+        }
         <div class="ds-search__icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle
+              cx="11"
+              cy="11"
+              r="8"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
           </svg>
         </div>
         <p-autocomplete
-          [(ngModel)]="selectedDestination"
+          [(ngModel)]="selectedCity"
           [suggestions]="suggestions"
           (completeMethod)="search($event)"
-          optionLabel="city"
-          placeholder="Search city, country or region…"
+          optionLabel="name"
+          placeholder="Search any city in the world…"
           [showClear]="true"
           styleClass="ds-autocomplete"
           panelStyleClass="ds-autocomplete-panel"
           appendTo="body"
+          [minLength]="2"
+          [delay]="150"
         >
-          <ng-template #item let-dest>
+          <ng-template #item let-city>
             <div class="ds-ac-item">
-              <span class="ds-ac-item__icon">{{ regionIcons[dest.region] || '📍' }}</span>
-              <span class="ds-ac-item__city">{{ dest.city }}</span>
-              <span class="ds-ac-item__country">{{ dest.country }}</span>
-              <span class="ds-ac-item__region">{{ dest.region }}</span>
+              <span class="ds-ac-item__icon">📍</span>
+              <span class="ds-ac-item__city">{{ city.name }}</span>
+              <span class="ds-ac-item__display">{{ city.displayName }}</span>
             </div>
+          </ng-template>
+          <ng-template #empty>
+            <div class="ds-ac-empty">No cities found</div>
           </ng-template>
         </p-autocomplete>
       </div>
@@ -73,10 +92,12 @@
         @for (dest of featured; track dest.city) {
           <button
             class="ds-card"
-            [class.ds-card--selected]="selectedDestination?.city === dest.city"
+            [class.ds-card--selected]="selectedDestinationName === dest.city"
             (click)="selectFeatured(dest)"
           >
-            <span class="ds-card__region-icon">{{ regionIcons[dest.region] || '📍' }}</span>
+            <span class="ds-card__region-icon">{{
+              regionIcons[dest.region] || '📍'
+            }}</span>
             <span class="ds-card__city">{{ dest.city }}</span>
             <span class="ds-card__country">{{ dest.country }}</span>
             <span class="ds-card__region">{{ dest.region }}</span>
@@ -85,17 +106,16 @@
       </div>
 
       <!-- Selected result banner -->
-      @if (selectedDestination) {
+      @if (selectedCity) {
         <div class="ds-result">
-          <span class="ds-result__icon">{{ regionIcons[selectedDestination.region] || '📍' }}</span>
+          <span class="ds-result__icon">📍</span>
           <div class="ds-result__info">
-            <span class="ds-result__city">{{ selectedDestination.city }}</span>
-            <span class="ds-result__meta">{{ selectedDestination.country }} · {{ selectedDestination.region }}</span>
+            <span class="ds-result__city">{{ selectedCity.name }}</span>
+            <span class="ds-result__meta">{{ selectedCity.displayName }}</span>
           </div>
           <span class="ds-result__badge">Selected</span>
         </div>
       }
     </div>
   </section>
-
 </div>
