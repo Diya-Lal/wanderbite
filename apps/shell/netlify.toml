@@ -1,0 +1,17 @@
+[build]
+  command = "npm exec nx build shell -- --configuration=production"
+  publish = "../../dist/apps/shell"
+
+[build.environment]
+  NODE_ENV = "production"
+  NX_IGNORE_UNSUPPORTED_TS_SETUP = "true"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
