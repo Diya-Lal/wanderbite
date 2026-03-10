@@ -21,3 +21,45 @@
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+# WanderBite Workspace
+
+## Stack
+- Angular ~21.1.0, Nx 22.5.x
+- Bundler: **Webpack** (`@angular-devkit/build-angular`)
+- Unit tests: **Jest** (`jest-preset-angular`)
+- E2E tests: **Cypress** (`@nx/cypress`)
+- Package manager: **npm**
+
+## Project Structure
+```
+apps/
+  shell/          # Main Angular host app (webpack, jest, cypress)
+libs/             # Shared libraries
+```
+
+## Common Commands
+```bash
+# Serve
+npm exec nx serve shell
+
+# Build
+npm exec nx build shell
+
+# Unit tests
+npm exec nx test shell
+
+# E2E tests
+npm exec nx e2e shell
+
+# Generate a library
+NX_IGNORE_UNSUPPORTED_TS_SETUP=true npm exec nx g @nx/angular:lib libs/<name> --unitTestRunner=jest --no-interactive
+
+# Generate a component in a lib
+NX_IGNORE_UNSUPPORTED_TS_SETUP=true npm exec nx g @nx/angular:component <name> --project=<lib>
+```
+
+## Important Notes
+- Always prefix `nx` commands with `NX_IGNORE_UNSUPPORTED_TS_SETUP=true` when generating Angular artifacts (workspace uses project references)
+- Shell `app.config.ts` must have `provideHttpClient(withFetch())` if any services use HttpClient
+- After fixing build issues, run `npm exec nx reset` to clear stale cache
