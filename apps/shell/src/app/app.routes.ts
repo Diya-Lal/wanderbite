@@ -1,6 +1,11 @@
 import { Route } from '@angular/router';
 
 export const appRoutes: Route[] = [
+  {
+    path: 'destination',
+    loadChildren: () =>
+      import('destinations/Routes').then((m) => m!.remoteRoutes),
+  },
   { path: '', redirectTo: 'homepage', pathMatch: 'full' },
   {
     path: 'homepage',

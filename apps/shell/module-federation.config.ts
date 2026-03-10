@@ -1,8 +1,8 @@
-import { ModuleFederationConfig } from '@nx/webpack';
+import { ModuleFederationConfig } from '@nx/module-federation';
 
 const config: ModuleFederationConfig = {
   name: 'shell',
-  remotes: ['homepage'],
+  remotes: ['homepage', 'destinations'],
 };
 
 export default config;

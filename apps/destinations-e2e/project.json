@@ -1,0 +1,9 @@
+{
+  "name": "destinations-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/destinations-e2e/src",
+  "implicitDependencies": ["destinations"],
+  "// targets": "to see all targets run: nx show project destinations-e2e --web",
+  "targets": {}
+}
