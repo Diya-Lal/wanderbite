@@ -40,6 +40,18 @@
         "componentTestingTargetName": "component-test",
         "ciTargetName": "e2e-ci"
       }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint"
+      }
     }
   ],
   "nxCloudId": "69b02b3b1a4ef20924b96a04",
@@ -73,6 +85,17 @@
     },
     "test": {
       "dependsOn": ["^build"]
+    },
+    "@nx/angular:webpack-browser": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "env": "NX_MF_DEV_REMOTES"
+        }
+      ]
     }
   },
   "generators": {

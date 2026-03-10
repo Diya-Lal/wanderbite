@@ -13,6 +13,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "homepage/Routes": ["apps/homepage/src/app/remote-entry/entry.routes.ts"]
+    }
   }
 }
