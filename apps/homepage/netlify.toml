@@ -1,5 +1,5 @@
 [build]
-  command = "cd ../.. && npm install && npm exec nx build homepage -- --configuration=production"
+  command = "npm install && npm exec nx build homepage -- --configuration=production"
   publish = "dist/apps/homepage"
 
 [build.environment]
