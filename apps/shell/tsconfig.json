@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
+    "module": "preserve",
     "noPropertyAccessFromIndexSignature": true,
     "experimentalDecorators": true,
     "strictNullChecks": true,

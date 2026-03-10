@@ -1,4 +1,101 @@
-<section class="destinations">
-  <h1>Destinations</h1>
-  <p>Explore the world's most beautiful places.</p>
-</section>
+<div class="wb-dark ds-page">
+
+  <!-- ── Navbar ── -->
+  <nav class="ds-nav">
+    <a class="ds-nav__brand" routerLink="/homepage">
+      <span class="ds-nav__logo-icon">✦</span>
+      <span class="ds-nav__logo-text">WanderBite</span>
+    </a>
+    <ul class="ds-nav__links">
+      <li>
+        <a routerLink="/destination" routerLinkActive="active" class="ds-nav__link">
+          Destinations
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ── Hero Header ── -->
+  <header class="ds-header">
+    <div class="ds-header__bg"></div>
+    <div class="ds-header__overlay"></div>
+    <div class="ds-header__content">
+      <p class="ds-header__eyebrow">
+        <span></span>Where do you want to go?<span></span>
+      </p>
+      <h1 class="ds-header__title">Explore <em>Destinations</em></h1>
+      <p class="ds-header__subtitle">
+        Search among hundreds of curated destinations around the world
+      </p>
+
+      <!-- ── Search ── -->
+      <div class="ds-search">
+        <div class="ds-search__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p-autocomplete
+          [(ngModel)]="selectedDestination"
+          [suggestions]="suggestions"
+          (completeMethod)="search($event)"
+          optionLabel="city"
+          placeholder="Search city, country or region…"
+          [showClear]="true"
+          styleClass="ds-autocomplete"
+          panelStyleClass="ds-autocomplete-panel"
+          appendTo="body"
+        >
+          <ng-template #item let-dest>
+            <div class="ds-ac-item">
+              <span class="ds-ac-item__icon">{{ regionIcons[dest.region] || '📍' }}</span>
+              <span class="ds-ac-item__city">{{ dest.city }}</span>
+              <span class="ds-ac-item__country">{{ dest.country }}</span>
+              <span class="ds-ac-item__region">{{ dest.region }}</span>
+            </div>
+          </ng-template>
+        </p-autocomplete>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Featured Destinations ── -->
+  <section class="ds-featured">
+    <div class="ds-featured__inner">
+      <h2 class="ds-featured__heading">
+        <span class="ds-featured__heading-line"></span>
+        Featured
+        <span class="ds-featured__heading-line"></span>
+      </h2>
+
+      <div class="ds-grid">
+        @for (dest of featured; track dest.city) {
+          <button
+            class="ds-card"
+            [class.ds-card--selected]="selectedDestination?.city === dest.city"
+            (click)="selectFeatured(dest)"
+          >
+            <span class="ds-card__region-icon">{{ regionIcons[dest.region] || '📍' }}</span>
+            <span class="ds-card__city">{{ dest.city }}</span>
+            <span class="ds-card__country">{{ dest.country }}</span>
+            <span class="ds-card__region">{{ dest.region }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Selected result banner -->
+      @if (selectedDestination) {
+        <div class="ds-result">
+          <span class="ds-result__icon">{{ regionIcons[selectedDestination.region] || '📍' }}</span>
+          <div class="ds-result__info">
+            <span class="ds-result__city">{{ selectedDestination.city }}</span>
+            <span class="ds-result__meta">{{ selectedDestination.country }} · {{ selectedDestination.region }}</span>
+          </div>
+          <span class="ds-result__badge">Selected</span>
+        </div>
+      }
+    </div>
+  </section>
+
+</div>
