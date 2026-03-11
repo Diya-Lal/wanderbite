@@ -1,5 +1,6 @@
 [build]
-  command = "npm ci"
+command = "npm ci && npm run build:destinations"
+  publish = "dist/apps/destinations"
 
 [build.environment]
   NODE_ENV = "production"
