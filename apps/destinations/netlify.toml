@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && npm exec nx build destinations -- --configuration=production"
+  command = "npm ci && npx nx build destinations --configuration=production"
   publish = "dist/apps/destinations"
 
 [build.environment]
@@ -10,8 +10,3 @@
   for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
