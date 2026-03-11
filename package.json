@@ -2,7 +2,11 @@
   "name": "@org/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build:shell": "nx build shell --configuration=production",
+    "build:homepage": "nx build homepage --configuration=production",
+    "build:destinations": "nx build destinations --configuration=production"
+  },
   "private": true,
   "devDependencies": {
     "@angular-devkit/build-angular": "~21.2.0",
