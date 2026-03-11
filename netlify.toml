@@ -1,16 +1,12 @@
-[build]
-command = "npm ci --include=dev && npm run build:destinations"
-  publish = "dist/apps/destinations"
-
 [build.environment]
-  NODE_ENV = "production"
+NODE_ENV = "production"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/*"
+to = "/index.html"
+status = 200
 
 [[headers]]
-  for = "/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
+for = "/*"
+[headers.values]
+Access-Control-Allow-Origin = "*"
