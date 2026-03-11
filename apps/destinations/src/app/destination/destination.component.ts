@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { CityResult, CitySearchService } from '../city-search.service';
 
@@ -8,15 +8,17 @@ export interface Destination {
   city: string;
   country: string;
   region: string;
+  lat: number;
+  lon: number;
 }
 
 export const FEATURED_DESTINATIONS: Destination[] = [
-  { city: 'Paris', country: 'France', region: 'Europe' },
-  { city: 'Tokyo', country: 'Japan', region: 'Asia' },
-  { city: 'Santorini', country: 'Greece', region: 'Europe' },
-  { city: 'Bali', country: 'Indonesia', region: 'Asia' },
-  { city: 'Marrakech', country: 'Morocco', region: 'Africa' },
-  { city: 'Reykjavik', country: 'Iceland', region: 'Europe' },
+  { city: 'Paris',     country: 'France',    region: 'Europe', lat: 48.8566,  lon: 2.3522   },
+  { city: 'Tokyo',     country: 'Japan',     region: 'Asia',   lat: 35.6762,  lon: 139.6503 },
+  { city: 'Santorini', country: 'Greece',    region: 'Europe', lat: 36.3932,  lon: 25.4615  },
+  { city: 'Bali',      country: 'Indonesia', region: 'Asia',   lat: -8.3405,  lon: 115.0920 },
+  { city: 'Marrakech', country: 'Morocco',   region: 'Africa', lat: 31.6295,  lon: -7.9811  },
+  { city: 'Reykjavik', country: 'Iceland',   region: 'Europe', lat: 64.1265,  lon: -21.8174 },
 ];
 
 @Component({
@@ -28,6 +30,7 @@ export const FEATURED_DESTINATIONS: Destination[] = [
 export class DestinationComponent {
   private citySearch = inject(CitySearchService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   selectedCity: CityResult | null = null;
   suggestions: CityResult[] = [];
@@ -66,12 +69,23 @@ export class DestinationComponent {
       displayName: `${dest.city}, ${dest.country}`,
       country: dest.country,
       region: dest.region,
-      lat: 0,
-      lon: 0,
+      lat: dest.lat,
+      lon: dest.lon,
     };
   }
 
   get selectedDestinationName(): string {
     return this.selectedCity?.name ?? '';
+  }
+
+  exploreRestaurants(): void {
+    if (!this.selectedCity) return;
+    this.router.navigate(['/food'], {
+      queryParams: {
+        city: this.selectedCity.name,
+        lat: this.selectedCity.lat,
+        lon: this.selectedCity.lon,
+      },
+    });
   }
 }

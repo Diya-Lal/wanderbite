@@ -1,0 +1,473 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap');
+
+// ── Tokens ────────────────────────────────────────────────
+$gold:        #c9a96e;
+$gold-light:  #e2c898;
+$dark:        #080d1a;
+$dark-mid:    #0f1726;
+$dark-card:   #111827;
+$border:      rgba(201, 169, 110, 0.18);
+$white:       #ffffff;
+$white-dim:   rgba(255, 255, 255, 0.65);
+$white-faint: rgba(255, 255, 255, 0.3);
+
+// ── Reset ─────────────────────────────────────────────────
+:host { display: block; width: 100%; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+// ── Page ──────────────────────────────────────────────────
+.rs-page {
+  min-height: 100vh;
+  background: $dark;
+  font-family: 'Jost', sans-serif;
+}
+
+// ── Navbar ────────────────────────────────────────────────
+.rs-nav {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.75rem 3.5rem;
+  background: linear-gradient(to bottom, rgba(8,13,26,0.85) 0%, rgba(8,13,26,0) 100%);
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+  }
+
+  &__logo-icon { font-size: 0.9rem; color: $gold; }
+
+  &__logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: $white;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__links { display: flex; list-style: none; gap: 2.5rem; }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.45rem 1rem;
+    cursor: pointer;
+    transition: color 0.25s, border-color 0.25s;
+
+    &:hover {
+      color: $gold;
+      border-color: rgba(201,169,110,0.4);
+    }
+  }
+
+  &__link {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.3s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: $gold;
+      transition: width 0.35s ease;
+    }
+
+    &:hover, &.active {
+      color: $gold;
+      &::after { width: 100%; }
+    }
+  }
+}
+
+// ── Header ────────────────────────────────────────────────
+.rs-header {
+  position: relative;
+  min-height: 45vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80');
+    background-size: cover;
+    background-position: center 40%;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(8,13,26,0.7) 0%,
+      rgba(8,13,26,0.55) 50%,
+      rgba(8,13,26,0.95) 100%
+    );
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: $white;
+    width: 100%;
+    max-width: 700px;
+    padding: 7rem 2rem 4rem;
+  }
+
+  &__eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: $gold;
+    margin-bottom: 1.25rem;
+    animation: riseIn 0.8s ease 0.2s both;
+
+    span {
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: $gold;
+      opacity: 0.6;
+    }
+  }
+
+  &__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    animation: riseIn 0.8s ease 0.4s both;
+
+    em { font-style: italic; color: $gold-light; }
+  }
+
+  &__subtitle {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: $white-dim;
+    line-height: 1.8;
+    animation: riseIn 0.8s ease 0.55s both;
+  }
+}
+
+// ── Content ───────────────────────────────────────────────
+.rs-content {
+  padding: 4rem 3.5rem 6rem;
+
+  &__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+// ── Results header ────────────────────────────────────────
+.rs-results-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+
+  &__count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: $gold;
+    white-space: nowrap;
+  }
+
+  &__line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, $border);
+
+    &:last-child {
+      background: linear-gradient(to left, transparent, $border);
+    }
+  }
+}
+
+// ── Restaurant Grid ───────────────────────────────────────
+.rs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+}
+
+// ── Restaurant Card ───────────────────────────────────────
+.rs-card {
+  background: $dark-card;
+  border: 1px solid $border;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+  animation: riseIn 0.6s ease both;
+
+  &:hover {
+    border-color: rgba(201,169,110,0.45);
+    transform: translateY(-3px);
+  }
+
+  &__image-wrap {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+
+    .rs-card:hover & { transform: scale(1.04); }
+  }
+
+  &__cuisine {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: $gold;
+    background: rgba(8,13,26,0.85);
+    border: 1px solid $border;
+    padding: 0.25rem 0.6rem;
+    backdrop-filter: blur(8px);
+  }
+
+  &__body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    flex: 1;
+  }
+
+  &__name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: $white;
+    line-height: 1.2;
+  }
+
+  &__stars {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+
+    &--none { min-height: 1.4rem; }
+  }
+
+  &__star {
+    font-size: 1rem;
+    color: $white-faint;
+    line-height: 1;
+    transition: color 0.2s;
+
+    &--filled { color: $gold; }
+  }
+
+  &__rating-val {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $white-dim;
+    margin-left: 0.4rem;
+  }
+
+  &__no-rating {
+    font-size: 0.72rem;
+    font-weight: 300;
+    color: $white-faint;
+    font-style: italic;
+  }
+
+  &__address,
+  &__hours {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: $white-dim;
+    line-height: 1.5;
+  }
+
+  &__address-icon,
+  &__hours-icon {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+
+  &__btn {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.55rem 1rem;
+    border: 1px solid $border;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    background: transparent;
+    color: $white-dim;
+
+    &--map {
+      &:hover {
+        background: rgba(201,169,110,0.1);
+        border-color: rgba(201,169,110,0.5);
+        color: $gold-light;
+      }
+    }
+
+    &--web {
+      &:hover {
+        background: rgba(201,169,110,0.1);
+        border-color: rgba(201,169,110,0.5);
+        color: $gold-light;
+      }
+    }
+  }
+}
+
+// ── Loading ───────────────────────────────────────────────
+.rs-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 5rem 0;
+
+  &__spinner {
+    width: 36px;
+    height: 36px;
+    border: 2px solid rgba(201,169,110,0.2);
+    border-top-color: $gold;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  &__text {
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $white-faint;
+  }
+}
+
+// ── Empty / Error ──────────────────────────────────────────
+.rs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 5rem 0;
+  text-align: center;
+
+  &__icon { font-size: 3rem; }
+
+  &__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: $white;
+  }
+
+  &__text {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: $white-dim;
+    max-width: 360px;
+    line-height: 1.7;
+  }
+}
+
+// ── CTA Button ────────────────────────────────────────────
+.rs-btn {
+  display: inline-block;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: $gold;
+  border: 1px solid rgba(201,169,110,0.4);
+  padding: 0.85rem 2rem;
+  margin-top: 0.5rem;
+  transition: background 0.25s, border-color 0.25s;
+
+  &:hover {
+    background: rgba(201,169,110,0.08);
+    border-color: rgba(201,169,110,0.7);
+  }
+}
+
+// ── Keyframes ─────────────────────────────────────────────
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Responsive ────────────────────────────────────────────
+@media (max-width: 768px) {
+  .rs-nav { padding: 1.25rem 1.5rem; }
+  .rs-content { padding: 3rem 1.5rem; }
+  .rs-header__content { padding: 6rem 1.5rem 3rem; }
+}

@@ -7,6 +7,7 @@ const config: ModuleFederationConfig = {
   remotes: [
     ['homepage',     isProduction ? 'https://wanderbite-homepage.netlify.app'     : 'http://localhost:4201'],
     ['destinations', isProduction ? 'https://wanderbite-destinations.netlify.app' : 'http://localhost:4202'],
+    ['food',         isProduction ? 'https://wanderbite-food.netlify.app'         : 'http://localhost:4203'],
   ],
 };
 

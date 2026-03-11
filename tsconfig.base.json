@@ -17,7 +17,8 @@
       "homepage/Routes": ["apps/homepage/src/app/remote-entry/entry.routes.ts"],
       "destinations/Routes": [
         "apps/destinations/src/app/remote-entry/entry.routes.ts"
-      ]
+      ],
+      "food/Routes": ["apps/food/src/app/remote-entry/entry.routes.ts"]
     }
   }
 }

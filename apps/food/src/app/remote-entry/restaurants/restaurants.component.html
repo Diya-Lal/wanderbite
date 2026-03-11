@@ -1,0 +1,157 @@
+<div class="wb-dark rs-page">
+
+  <!-- ── Navbar ── -->
+  <nav class="rs-nav">
+    <a class="rs-nav__brand" routerLink="/homepage">
+      <span class="rs-nav__logo-icon">✦</span>
+      <span class="rs-nav__logo-text">WanderBite</span>
+    </a>
+    <ul class="rs-nav__links">
+      <li><a routerLink="/destination" class="rs-nav__link">Destinations</a></li>
+      <li><a routerLink="/food" routerLinkActive="active" class="rs-nav__link">Restaurants</a></li>
+    </ul>
+    <button class="rs-nav__back" (click)="goBack()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back
+    </button>
+  </nav>
+
+  <!-- ── Hero Header ── -->
+  <header class="rs-header">
+    <div class="rs-header__bg"></div>
+    <div class="rs-header__overlay"></div>
+    <div class="rs-header__content">
+      <p class="rs-header__eyebrow">
+        <span></span>Taste the world<span></span>
+      </p>
+      @if (city) {
+        <h1 class="rs-header__title">Restaurants in <em>{{ city }}</em></h1>
+      } @else {
+        <h1 class="rs-header__title">Discover <em>Restaurants</em></h1>
+      }
+      <p class="rs-header__subtitle">
+        @if (city) {
+          The finest dining experiences awaiting you
+        } @else {
+          Select a destination to explore its culinary scene
+        }
+      </p>
+    </div>
+  </header>
+
+  <!-- ── Content ── -->
+  <section class="rs-content">
+    <div class="rs-content__inner">
+
+      <!-- No destination selected -->
+      @if (!lat && !lon) {
+        <div class="rs-empty">
+          <div class="rs-empty__icon">🍽️</div>
+          <h2 class="rs-empty__title">No destination selected</h2>
+          <p class="rs-empty__text">Go to Destinations and pick a city to explore its restaurant scene.</p>
+          <a routerLink="/destination" class="rs-btn">Explore Destinations</a>
+        </div>
+      }
+
+      <!-- Loading -->
+      @if (loading) {
+        <div class="rs-loading">
+          <div class="rs-loading__spinner"></div>
+          <p class="rs-loading__text">Finding the best restaurants…</p>
+        </div>
+      }
+
+      <!-- Error -->
+      @if (error && !loading) {
+        <div class="rs-empty">
+          <div class="rs-empty__icon">⚠️</div>
+          <h2 class="rs-empty__title">Something went wrong</h2>
+          <p class="rs-empty__text">Could not load restaurant data. Please try again.</p>
+        </div>
+      }
+
+      <!-- Results header -->
+      @if (!loading && !error && restaurants.length > 0) {
+        <div class="rs-results-header">
+          <span class="rs-results-header__line"></span>
+          <span class="rs-results-header__count">{{ restaurants.length }} restaurants found</span>
+          <span class="rs-results-header__line"></span>
+        </div>
+      }
+
+      <!-- Restaurant grid -->
+      @if (!loading && !error && restaurants.length > 0) {
+        <div class="rs-grid">
+          @for (r of restaurants; track r.id) {
+            <article class="rs-card">
+              <div class="rs-card__image-wrap">
+                <img
+                  class="rs-card__image"
+                  [src]="r.imageUrl"
+                  [alt]="r.name"
+                  loading="lazy"
+                />
+                <span class="rs-card__cuisine">{{ r.cuisine | titlecase }}</span>
+              </div>
+
+              <div class="rs-card__body">
+                <h3 class="rs-card__name">{{ r.name }}</h3>
+
+                @if (r.rating) {
+                  <div class="rs-card__stars">
+                    @for (s of getStars(r.rating); track $index) {
+                      <span class="rs-card__star" [class.rs-card__star--filled]="s === 1">★</span>
+                    }
+                    <span class="rs-card__rating-val">{{ r.rating | number: '1.1-1' }}</span>
+                  </div>
+                } @else {
+                  <div class="rs-card__stars rs-card__stars--none">
+                    <span class="rs-card__no-rating">No rating yet</span>
+                  </div>
+                }
+
+                @if (r.address) {
+                  <p class="rs-card__address">
+                    <span class="rs-card__address-icon">📍</span>
+                    {{ r.address }}
+                  </p>
+                }
+
+                @if (r.openingHours) {
+                  <p class="rs-card__hours">
+                    <span class="rs-card__hours-icon">🕐</span>
+                    {{ r.openingHours }}
+                  </p>
+                }
+
+                <div class="rs-card__actions">
+                  <button class="rs-card__btn rs-card__btn--map" (click)="openMap(r)">
+                    View on Map
+                  </button>
+                  @if (r.website) {
+                    <a class="rs-card__btn rs-card__btn--web" [href]="r.website" target="_blank" rel="noopener">
+                      Website
+                    </a>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+
+      <!-- No results -->
+      @if (!loading && !error && lat && lon && restaurants.length === 0) {
+        <div class="rs-empty">
+          <div class="rs-empty__icon">🍽️</div>
+          <h2 class="rs-empty__title">No restaurants found</h2>
+          <p class="rs-empty__text">We couldn't find any restaurants in this area. Try a different city.</p>
+          <a routerLink="/destination" class="rs-btn">Change Destination</a>
+        </div>
+      }
+
+    </div>
+  </section>
+</div>

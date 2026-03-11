@@ -11,4 +11,8 @@ export const appRoutes: Route[] = [
     path: 'homepage',
     loadChildren: () => import('homepage/Routes').then((m) => m!.remoteRoutes),
   },
+  {
+    path: 'food',
+    loadChildren: () => import('food/Routes').then((m) => m!.remoteRoutes),
+  },
 ];

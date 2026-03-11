@@ -7,12 +7,13 @@
     </a>
     <ul class="ds-nav__links">
       <li>
-        <a
-          routerLink="/destination"
-          routerLinkActive="active"
-          class="ds-nav__link"
-        >
+        <a routerLink="/destination" routerLinkActive="active" class="ds-nav__link">
           Destinations
+        </a>
+      </li>
+      <li>
+        <a routerLink="/food" routerLinkActive="active" class="ds-nav__link">
+          Restaurants
         </a>
       </li>
     </ul>
@@ -76,6 +77,16 @@
           </ng-template>
         </p-autocomplete>
       </div>
+
+      <!-- ── Selected city + CTA (inline in header, always visible) ── -->
+      @if (selectedCity) {
+        <div class="ds-header__selected">
+          <span class="ds-header__selected-label">📍 {{ selectedCity.displayName }}</span>
+          <button class="ds-header__explore-btn" (click)="exploreRestaurants()">
+            🍽️ Explore Restaurants
+          </button>
+        </div>
+      }
     </div>
   </header>
 
@@ -105,17 +116,6 @@
         }
       </div>
 
-      <!-- Selected result banner -->
-      @if (selectedCity) {
-        <div class="ds-result">
-          <span class="ds-result__icon">📍</span>
-          <div class="ds-result__info">
-            <span class="ds-result__city">{{ selectedCity.name }}</span>
-            <span class="ds-result__meta">{{ selectedCity.displayName }}</span>
-          </div>
-          <span class="ds-result__badge">Selected</span>
-        </div>
-      }
     </div>
   </section>
 </div>
