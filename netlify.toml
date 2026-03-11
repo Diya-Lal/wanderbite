@@ -1,5 +1,5 @@
 [build]
-command = "npm ci && npm run build:destinations"
+command = "npm ci --include=dev && npm run build:destinations"
   publish = "dist/apps/destinations"
 
 [build.environment]
