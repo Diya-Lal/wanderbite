@@ -16,6 +16,11 @@
           Restaurants
         </a>
       </li>
+      <li>
+        <a routerLink="/activities" routerLinkActive="active" class="ds-nav__link">
+          Activities
+        </a>
+      </li>
     </ul>
   </nav>
 
@@ -84,6 +89,9 @@
           <span class="ds-header__selected-label">📍 {{ selectedCity.displayName }}</span>
           <button class="ds-header__explore-btn" (click)="exploreRestaurants()">
             🍽️ Explore Restaurants
+          </button>
+          <button class="ds-header__explore-btn" (click)="exploreActivities()">
+            🗺️ Explore Activities
           </button>
         </div>
       }

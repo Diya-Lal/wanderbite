@@ -88,4 +88,15 @@ export class DestinationComponent {
       },
     });
   }
+
+  exploreActivities(): void {
+    if (!this.selectedCity) return;
+    this.router.navigate(['/activities'], {
+      queryParams: {
+        city: this.selectedCity.name,
+        lat: this.selectedCity.lat,
+        lon: this.selectedCity.lon,
+      },
+    });
+  }
 }

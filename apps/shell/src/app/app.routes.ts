@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { ActivitiesPageComponent } from './activities-page/activities-page.component';
 
 export const appRoutes: Route[] = [
   {
@@ -14,5 +15,9 @@ export const appRoutes: Route[] = [
   {
     path: 'food',
     loadChildren: () => import('food/Routes').then((m) => m!.remoteRoutes),
+  },
+  {
+    path: 'activities',
+    component: ActivitiesPageComponent,
   },
 ];
