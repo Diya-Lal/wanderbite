@@ -15,7 +15,6 @@ interface Props {
   city: string;
   lat: number;
   lon: number;
-  standalone: boolean;
 }
 
 const TYPE_LABELS: Record<string, string> = {

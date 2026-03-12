@@ -4,9 +4,11 @@ import config from './module-federation.config';
 // Shell loads it via script tag (not MF import) to avoid cross-framework protocol mismatch
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { ModuleFederationPlugin } = require('webpack').container;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = (env: Record<string, string>) => {
-  const isDev = env?.['NODE_ENV'] !== 'production';
+module.exports = (_env: Record<string, string>) => {
+  const isDev = process.env['NODE_ENV'] !== 'production';
   return {
     entry: './apps/activities/src/main.tsx',
     resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js'] },
@@ -30,6 +32,10 @@ module.exports = (env: Record<string, string>) => {
       ],
     },
     plugins: [
+      new HtmlWebpackPlugin({
+        template: './apps/activities/src/index.html',
+        chunks: ['main'],
+      }),
       new ModuleFederationPlugin({
         name: config.name,
         filename: 'remoteEntry.js',

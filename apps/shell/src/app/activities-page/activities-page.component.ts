@@ -10,7 +10,7 @@ import {
 declare const process: { env: Record<string, string> };
 const ACTIVITIES_REMOTE =
   (typeof process !== 'undefined' && process?.['env']?.['NODE_ENV'] === 'production')
-    ? 'https://wanderbite-activities.vercel.app/remoteEntry.js'
+    ? 'https://activities-gamma.vercel.app/remoteEntry.js'
     : 'http://localhost:4204/remoteEntry.js';
 
 @Component({
