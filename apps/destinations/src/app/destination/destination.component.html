@@ -7,7 +7,11 @@
     </a>
     <ul class="ds-nav__links">
       <li>
-        <a routerLink="/destination" routerLinkActive="active" class="ds-nav__link">
+        <a
+          routerLink="/destination"
+          routerLinkActive="active"
+          class="ds-nav__link"
+        >
           Destinations
         </a>
       </li>
@@ -17,7 +21,11 @@
         </a>
       </li>
       <li>
-        <a routerLink="/activities" routerLinkActive="active" class="ds-nav__link">
+        <a
+          routerLink="/activities"
+          routerLinkActive="active"
+          class="ds-nav__link"
+        >
           Activities
         </a>
       </li>
@@ -37,9 +45,6 @@
 
       <!-- ── Search ── -->
       <div class="ds-search">
-        @if (searching) {
-          <div class="ds-search__spinner"></div>
-        }
         <div class="ds-search__icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <circle
@@ -61,6 +66,8 @@
           [(ngModel)]="selectedCity"
           [suggestions]="suggestions"
           (completeMethod)="search($event)"
+          (onSelect)="onCitySelect()"
+          (onClear)="onCityClear()"
           optionLabel="name"
           placeholder="Search any city in the world…"
           [showClear]="true"
@@ -84,9 +91,11 @@
       </div>
 
       <!-- ── Selected city + CTA (inline in header, always visible) ── -->
-      @if (selectedCity) {
+      @if (selectedCity?.lat) {
         <div class="ds-header__selected">
-          <span class="ds-header__selected-label">📍 {{ selectedCity.displayName }}</span>
+          <span class="ds-header__selected-label"
+            >📍 {{ selectedCity?.displayName }}</span
+          >
           <button class="ds-header__explore-btn" (click)="exploreRestaurants()">
             🍽️ Explore Restaurants
           </button>
@@ -123,7 +132,6 @@
           </button>
         }
       </div>
-
     </div>
   </section>
 </div>

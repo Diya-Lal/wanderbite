@@ -25,9 +25,20 @@ export class ActivitiesPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const params = new URLSearchParams(window.location.search);
-    const city = params.get('city') ?? '';
-    const lat = parseFloat(params.get('lat') ?? '0');
-    const lon = parseFloat(params.get('lon') ?? '0');
+    let city = params.get('city') ?? '';
+    let lat = parseFloat(params.get('lat') ?? '0');
+    let lon = parseFloat(params.get('lon') ?? '0');
+
+    // Fall back to last selected city from localStorage (when navigating via nav bar)
+    if (!lat || !lon) {
+      const saved = localStorage.getItem('wb_selected_city');
+      if (saved) {
+        const c = JSON.parse(saved);
+        city = c.name ?? '';
+        lat = c.lat ?? 0;
+        lon = c.lon ?? 0;
+      }
+    }
 
     this.loadAndMount(city, lat, lon);
   }

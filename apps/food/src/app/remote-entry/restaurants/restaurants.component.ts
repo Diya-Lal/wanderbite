@@ -35,6 +35,18 @@ export class RestaurantsComponent implements OnInit {
     this.city = params.get('city') ?? '';
     this.lat = parseFloat(params.get('lat') ?? '0');
     this.lon = parseFloat(params.get('lon') ?? '0');
+
+    // Fall back to last selected city from localStorage (when navigating via nav bar)
+    if (!this.lat || !this.lon) {
+      const saved = localStorage.getItem('wb_selected_city');
+      if (saved) {
+        const c = JSON.parse(saved);
+        this.city = c.name ?? '';
+        this.lat = c.lat ?? 0;
+        this.lon = c.lon ?? 0;
+      }
+    }
+
     if (this.lat && this.lon) {
       this.fetchRestaurants();
     }

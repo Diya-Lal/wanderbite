@@ -8,7 +8,7 @@ interface Activity {
   address: string;
   lat: number;
   lon: number;
-  imageUrl: string;
+  wikimediaUrl?: string;
 }
 
 interface Props {
@@ -29,18 +29,37 @@ const TYPE_LABELS: Record<string, string> = {
   historic: 'Historic Site',
 };
 
-const TYPE_IMAGES: Record<string, string> = {
-  attraction: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
-  museum:     'https://images.unsplash.com/photo-1503152394-c571994fd383?w=600&q=80',
-  viewpoint:  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80',
-  zoo:        'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=600&q=80',
-  park:       'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80',
-  monument:   'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-  gallery:    'https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=600&q=80',
-  theme_park: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=600&q=80',
-  historic:   'https://images.unsplash.com/photo-1548013146-72479768bada?w=600&q=80',
-  default:    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+const TYPE_ICONS: Record<string, string> = {
+  attraction: '✦',
+  museum:     '🏛',
+  viewpoint:  '🔭',
+  zoo:        '🦁',
+  park:       '🌿',
+  monument:   '🗿',
+  gallery:    '🖼',
+  theme_park: '🎡',
+  historic:   '⚔️',
+  default:    '📍',
 };
+
+const TYPE_GRADIENTS: Record<string, string> = {
+  attraction: 'linear-gradient(135deg, #1a1228 0%, #2d1f4e 100%)',
+  museum:     'linear-gradient(135deg, #0f1a2e 0%, #1e3a5f 100%)',
+  viewpoint:  'linear-gradient(135deg, #0d1f1a 0%, #1a3d30 100%)',
+  zoo:        'linear-gradient(135deg, #1a1a0d 0%, #3d3010 100%)',
+  park:       'linear-gradient(135deg, #0d1a10 0%, #1a3d20 100%)',
+  monument:   'linear-gradient(135deg, #1a1212 0%, #3d1a1a 100%)',
+  gallery:    'linear-gradient(135deg, #1a0f1a 0%, #3d1f3d 100%)',
+  theme_park: 'linear-gradient(135deg, #1a0d1a 0%, #3d1050 100%)',
+  historic:   'linear-gradient(135deg, #1a1208 0%, #3d2a08 100%)',
+  default:    'linear-gradient(135deg, #0f1726 0%, #1e2f4e 100%)',
+};
+
+function wikimediaThumb(tag: string): string {
+  // tag may be "File:Foo.jpg" or just "Foo.jpg"
+  const file = tag.replace(/^File:/i, '').replace(/ /g, '_');
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=600`;
+}
 
 const MIRRORS = [
   'https://overpass.openstreetmap.fr/api/interpreter',
@@ -71,6 +90,7 @@ async function fetchActivities(lat: number, lon: number): Promise<Activity[]> {
         .filter((el: any) => el.tags?.name)
         .map((el: any) => {
           const tourismType = el.tags.tourism ?? el.tags.leisure ?? el.tags.historic ?? 'attraction';
+          const wikiTag = el.tags.wikimedia_commons ?? el.tags.image ?? '';
           return {
             id: el.id,
             name: el.tags.name,
@@ -78,7 +98,7 @@ async function fetchActivities(lat: number, lon: number): Promise<Activity[]> {
             address: [el.tags['addr:street'], el.tags['addr:city']].filter(Boolean).join(', '),
             lat: el.lat,
             lon: el.lon,
-            imageUrl: TYPE_IMAGES[tourismType] ?? TYPE_IMAGES['default'],
+            wikimediaUrl: wikiTag ? wikimediaThumb(wikiTag) : undefined,
           };
         });
     } catch {
@@ -185,8 +205,13 @@ export default function App({ city, lat, lon }: Props) {
               <div className="ac-grid">
                 {activities.map((a) => (
                   <article className="ac-card" key={a.id}>
-                    <div className="ac-card__image-wrap">
-                      <img className="ac-card__image" src={a.imageUrl} alt={a.name} loading="lazy" />
+                    <div className="ac-card__visual"
+                      style={{ background: a.wikimediaUrl ? undefined : (TYPE_GRADIENTS[a.type] ?? TYPE_GRADIENTS['default']) }}>
+                      {a.wikimediaUrl
+                        ? <img className="ac-card__image" src={a.wikimediaUrl} alt={a.name} loading="lazy"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        : <span className="ac-card__type-icon">{TYPE_ICONS[a.type] ?? TYPE_ICONS['default']}</span>
+                      }
                       <span className="ac-card__type">{TYPE_LABELS[a.type] ?? a.type}</span>
                     </div>
                     <div className="ac-card__body">

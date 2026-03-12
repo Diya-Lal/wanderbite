@@ -21,6 +21,8 @@ export const FEATURED_DESTINATIONS: Destination[] = [
   { city: 'Reykjavik', country: 'Iceland',   region: 'Europe', lat: 64.1265,  lon: -21.8174 },
 ];
 
+const CITY_STORAGE_KEY = 'wb_selected_city';
+
 @Component({
   selector: 'app-destination',
   imports: [FormsModule, RouterModule, AutoComplete],
@@ -36,6 +38,11 @@ export class DestinationComponent {
   suggestions: CityResult[] = [];
   searching = false;
   featured = FEATURED_DESTINATIONS;
+
+  constructor() {
+    const saved = localStorage.getItem(CITY_STORAGE_KEY);
+    if (saved) this.selectedCity = JSON.parse(saved);
+  }
 
   regionIcons: Record<string, string> = {
     Europe: '🏰',
@@ -62,6 +69,17 @@ export class DestinationComponent {
     });
   }
 
+  onCitySelect(): void {
+    if (this.selectedCity?.lat) {
+      localStorage.setItem(CITY_STORAGE_KEY, JSON.stringify(this.selectedCity));
+    }
+  }
+
+  onCityClear(): void {
+    this.selectedCity = null;
+    localStorage.removeItem(CITY_STORAGE_KEY);
+  }
+
   selectFeatured(dest: Destination): void {
     this.selectedCity = {
       id: 0,
@@ -72,6 +90,7 @@ export class DestinationComponent {
       lat: dest.lat,
       lon: dest.lon,
     };
+    localStorage.setItem(CITY_STORAGE_KEY, JSON.stringify(this.selectedCity));
   }
 
   get selectedDestinationName(): string {
