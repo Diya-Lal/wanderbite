@@ -7,11 +7,10 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
-declare const process: { env: Record<string, string> };
 const ACTIVITIES_REMOTE =
-  (typeof process !== 'undefined' && process?.['env']?.['NODE_ENV'] === 'production')
-    ? 'https://activities-gamma.vercel.app/remoteEntry.js'
-    : 'http://localhost:4204/remoteEntry.js';
+  window.location.hostname === 'localhost'
+    ? 'http://localhost:4204/remoteEntry.js'
+    : 'https://activities-gamma.vercel.app/remoteEntry.js';
 
 @Component({
   selector: 'app-activities-page',
