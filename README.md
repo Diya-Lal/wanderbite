@@ -10,13 +10,13 @@ cities, restaurants, and local attractions around the world.
 
 ## Live Demo
 
-| App                   | URL                                      |
-| --------------------- | ---------------------------------------- |
-| **Shell (main site)** | _(Netlify — add your URL)_               |
-| Homepage              | _(wanderbite-homepage.netlify.app)_      |
-| Destinations          | _(wanderbite-destinations.netlify.app)_  |
-| Restaurants           | https://wanderbite-food.vercel.app       |
-| Activities            | https://wanderbite-activities.vercel.app |
+| App                   | URL                                         |
+| --------------------- | ------------------------------------------- |
+| **Shell (main site)** | https://wanderbite.netlify.app              |
+| Homepage              | https://wanderbite-homepage.netlify.app     |
+| Destinations          | https://wanderbite-destinations.netlify.app |
+| Restaurants           | https://wanderbite-food.vercel.app          |
+| Activities            | https://activities-gamma.vercel.app/        |
 
 ## Tech Stack
 
