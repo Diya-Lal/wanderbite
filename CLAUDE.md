@@ -25,6 +25,7 @@
 # WanderBite Workspace
 
 ## Stack
+
 - **Angular** ~21.2.0, **Nx** 22.5.4, **PrimNG** 21.1.3
 - **Bundler:** Webpack Module Federation (`@nx/module-federation`)
 - **Unit tests:** Jest (`jest-preset-angular`)
@@ -32,6 +33,7 @@
 - **Package manager:** npm
 
 ## Project Structure
+
 ```
 apps/
   shell/          # Host app — port 4200, deployed: Netlify
@@ -46,6 +48,7 @@ libs/
 ## Apps Overview
 
 ### shell
+
 - Bootstraps via `main.ts` → `bootstrap.ts` (async boundary required for MFE)
 - `app.config.ts`: `provideRouter`, `provideHttpClient(withFetch())`, `providePrimeNG({ ripple: true })`
 - `app.routes.ts`: lazy loads `homepage/Routes`, `destinations/Routes`, `food/Routes`; `/activities` → `ActivitiesPageComponent`
@@ -53,41 +56,54 @@ libs/
 - **activities is NOT in shell's MF config** — loaded via script tag (see Cross-Framework Loading below)
 
 ### homepage
+
 - Component: `HomeComponent` (`apps/homepage/src/app/home/`)
 - Nav links: Destinations, Restaurants
 
 ### destinations
+
 - Component: `DestinationComponent` (`apps/destinations/src/app/destination/`)
 - City search via Open-Meteo geocoding API (no auth needed)
 - Featured destinations have hardcoded lat/lon coordinates
-- After selecting a city, shows **"🍽️ Explore Restaurants"** button in the hero header
-- Navigates to `/food?city=Paris&lat=48.8566&lon=2.3522`
+- After selecting a city, shows **"🍽️ Explore Restaurants"** and **"🗺️ Explore Activities"** buttons in hero header
+- Buttons only show when `selectedCity?.lat` is truthy (guards against typed-but-not-selected string)
+- Navigates to `/food` or `/activities` with `{ queryParams: { city, lat, lon } }`
+- Saves selected city to `localStorage` key `wb_selected_city` on selection/featured click; clears on clear
 
 ### activities (React)
+
 - **Framework:** React 19 + custom webpack (NOT Angular, NOT NX Angular MF)
 - Component: `App.tsx` (`apps/activities/src/app/`)
 - Exposes: `mount(el, city, lat, lon)` via `src/app/mount.tsx`
+- Async boundary: `main.tsx` → `import('./bootstrap')`, actual render in `bootstrap.tsx`
 - Webpack: `@nx/webpack:webpack` executor with custom `webpack.config.ts`
   - Standard `webpack/lib/container/ModuleFederationPlugin` (NOT `@module-federation/enhanced`)
   - `filename: 'remoteEntry.js'`, explicit `publicPath: 'http://localhost:4204/'` in dev
   - `babel-loader` for JSX/TSX, `style-loader`+`css-loader` for CSS
   - `devServer.port: 4204` must be set in webpack config (executor ignores project.json port)
-- Overpass API: `tourism=attraction|museum|viewpoint`, 5km radius, 20 results, 15s timeout
-- Images: type-mapped Unsplash URLs (no API key)
+  - `isDev` check: use `process.env['NODE_ENV'] !== 'production'` (not webpack's `env` param — NX doesn't pass it)
+- Overpass API: `tourism=attraction|museum|viewpoint`, 5km radius, 20 results, 15s timeout; 3-mirror fallback
+- Images: **dark gradient per activity type** (`TYPE_GRADIENTS`) + large emoji icon as fallback visual;
+  real **Wikimedia Commons** photo shown when OSM node has `wikimedia_commons` or `image` tag
+  (`https://commons.wikimedia.org/wiki/Special:FilePath/{file}?width=600`); `onError` falls back silently
 - CSS class prefix: `ac-`
 
 ### food (restaurants)
+
 - Component: `RestaurantsComponent` (`apps/food/src/app/remote-entry/restaurants/`)
 - `RestaurantService`: Overpass API with 3-mirror fallback (rate-limit resilience)
   - Primary: `overpass.openstreetmap.fr`
   - Fallback 1: `overpass.kumi.systems`
   - Fallback 2: `overpass-api.de`
 - Reads city/lat/lon from **URL query params** via `URLSearchParams(window.location.search)` (NOT `ActivatedRoute` — MFE injection boundary issue)
+- Falls back to `localStorage.getItem('wb_selected_city')` when URL has no params (direct nav via navbar)
 - Must call `ChangeDetectorRef.detectChanges()` after HTTP response (withFetch() zone issue in MFE)
 - Restaurant images: cuisine-type mapped Unsplash URLs (no API key)
 - Back button uses `Location.back()`
+- Nav includes Activities tab (Destinations, Restaurants, Activities)
 
 ## Data Flow
+
 ```
 Destinations → select city → "Explore Restaurants" / "Explore Activities" buttons
   → router.navigate(['/food' | '/activities'], { queryParams: { city, lat, lon } })
@@ -102,12 +118,13 @@ with `import * as` (ES module syntax). Standard webpack MF outputs CommonJS IIFE
 gives `{ default: container }` so `foo.get` is undefined → `fn is not a function` error.
 
 **Solution — Script tag loading in `ActivitiesPageComponent`:**
+
 ```typescript
 // Shell's ActivitiesPageComponent.ngOnInit():
 const script = document.createElement('script');
 script.src = 'http://localhost:4204/remoteEntry.js';
 script.onload = () => {
-  const container = (window as any)['activities'];  // set by remoteEntry IIFE
+  const container = (window as any)['activities']; // set by remoteEntry IIFE
   container.get('./mount').then((factory) => {
     const mod = factory();
     this.unmount = mod.mount(this.container.nativeElement, city, lat, lon);
@@ -115,11 +132,13 @@ script.onload = () => {
 };
 document.head.appendChild(script);
 ```
+
 - No `import('activities/mount')` — activities is NOT in shell's webpack MF config
 - No `activities.d.ts` type declaration needed (uses `any`)
 - React `mount()` returns unmount function, called in `ngOnDestroy`
 
 ### What was tried and failed (do NOT retry these):
+
 1. **`@module-federation/enhanced/webpack` in activities** → generates enhanced container with
    `__webpack_require__.federation.bundlerRuntime.initContainerEntry` — shell's enhanced runtime
    calls `external.get` which resolves to `undefined` because the init protocol mismatches.
@@ -128,7 +147,7 @@ document.head.appendChild(script);
    `{ default: container }` — `foo.get` is undefined. The `.mjs` extension tricks the shell into
    ES-module loading mode even though the file is CommonJS.
 3. **`experiments.outputModule: true` in activities webpack** → Standard `webpack/lib/container/
-   ModuleFederationPlugin` doesn't support ES module output format for container entries.
+ModuleFederationPlugin` doesn't support ES module output format for container entries.
    The build log shows `[javascript module]` but the file is still a IIFE without `export` statements.
 4. **Registering activities in shell's `module-federation.config.ts`** → Any MF-based loading fails
    due to the CommonJS/ES-module boundary. Script tag loading bypasses this entirely.
@@ -136,45 +155,56 @@ document.head.appendChild(script);
 ## Critical MFE Rules
 
 ### Angular singletons require root package.json entries
+
 `withModuleFederation` reads versions from **root `package.json`** to share Angular as singleton.
 Must include: `@angular/core`, `@angular/common`, `@angular/router`, `@angular/forms`,
 `@angular/platform-browser`, `@angular/compiler`, `rxjs`, `primeng`, `@primeuix/themes`, `tslib`.
 Warning: `"Could not find a version for @angular/core"` → NG0203 at runtime.
 
 ### Async bootstrap boundary (required for all apps)
+
 `main.ts` must be: `import('./bootstrap').catch(err => console.error(err))`
 Synchronous bootstrap breaks MFE shared singleton resolution.
 
 ### Shell is the root injector
+
 - Shell `app.config.ts` must provide `provideHttpClient(withFetch())` and `providePrimeNG`
 - Remote `app.config.ts` only applies when the remote runs standalone
 - `ActivatedRoute` injection can fail across MFE bundle boundaries — use `URLSearchParams` instead
 
 ### tsconfig path aliases enable shell compilation of remotes
+
 `tsconfig.base.json` paths:
+
 ```json
 "homepage/Routes":     ["apps/homepage/src/app/remote-entry/entry.routes.ts"],
 "destinations/Routes": ["apps/destinations/src/app/remote-entry/entry.routes.ts"],
 "food/Routes":         ["apps/food/src/app/remote-entry/entry.routes.ts"]
 ```
+
 Shell compiles remote components via these aliases — remote imports must resolve in shell's TS context.
 Shell `tsconfig.json` must have `"moduleResolution": "bundler"` and `"module": "preserve"`.
 
 ### module-federation exposes paths
+
 Must use `resolve(__dirname, ...)` not relative paths:
+
 ```ts
 exposes: { './Routes': resolve(__dirname, 'src/app/remote-entry/entry.routes.ts') }
 ```
 
 ### Stale cache causes phantom errors
+
 After fixing source files: `npm exec nx reset` before serving.
 
 ### PrimNG v21 usage
+
 - Use `AutoComplete` standalone component, NOT `AutoCompleteModule`
 - Import: `import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'`
 - `DecimalPipe` must be in standalone component `imports` array for `| number` pipe
 
 ## Common Commands
+
 ```bash
 # Serve all 5 apps together
 npx nx run-many -t serve -p shell homepage destinations food activities --parallel=5
@@ -194,19 +224,22 @@ vercel deploy dist/apps/activities --prod --yes
 ```
 
 ## Deployment
-| App | Platform | URL |
-|-----|----------|-----|
-| shell | Netlify | (main site) |
-| homepage | Netlify | wanderbite-homepage.netlify.app |
-| destinations | Netlify | wanderbite-destinations.netlify.app |
-| food | Vercel | wanderbite-food.vercel.app |
-| activities | Vercel | wanderbite-activities.vercel.app |
+
+| App          | Platform | URL                                 |
+| ------------ | -------- | ----------------------------------- |
+| shell        | Netlify  | (main site)                         |
+| homepage     | Netlify  | wanderbite-homepage.netlify.app     |
+| destinations | Netlify  | wanderbite-destinations.netlify.app |
+| food         | Vercel   | wanderbite-food.vercel.app          |
+| activities   | Vercel   | activities-gamma.vercel.app/        |
 
 ### Netlify build budget fix
+
 Shell `project.json` `anyComponentStyle` budget must be large enough for all remote SCSS
 compiled via path aliases. Current: `maximumWarning: 12kb`, `maximumError: 24kb`.
 
 ## Design System
+
 - Fonts: `Cormorant Garamond` (headings/serif), `Jost` (body/UI)
 - Colors: `$gold: #c9a96e`, `$dark: #080d1a`, `$dark-card: #111827`
 - Pattern: dark luxury travel aesthetic, gold accents, subtle animations (`riseIn`, `spin`)

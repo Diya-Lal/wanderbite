@@ -1,106 +1,123 @@
-# New Nx Repository
+# WanderBite
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A **micro-frontend travel app** built with Angular, React, and Webpack Module Federation — exploring
+cities, restaurants, and local attractions around the world.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+![Homepage](docs/screenshots/wanderbite_homepage.png)
+![Destinations](docs/screenshots/destinations.png)
+![Restaurants](docs/screenshots/restaurants.png)
+![Activites](docs/screenshots/activities.png)
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
-## Finish your Nx platform setup
+## Live Demo
 
-🚀 [Finish setting up your workspace](https://cloud.nx.app/connect/vXjQ6T8fcL) to get faster builds with remote caching, distributed task execution, and self-healing CI. [Learn more about Nx Cloud](https://nx.dev/ci/intro/why-nx-cloud).
-## Generate a library
+| App                   | URL                                      |
+| --------------------- | ---------------------------------------- |
+| **Shell (main site)** | _(Netlify — add your URL)_               |
+| Homepage              | _(wanderbite-homepage.netlify.app)_      |
+| Destinations          | _(wanderbite-destinations.netlify.app)_  |
+| Restaurants           | https://wanderbite-food.vercel.app       |
+| Activities            | https://wanderbite-activities.vercel.app |
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+## Tech Stack
+
+- **Angular 21** — shell, homepage, destinations, restaurants (micro-frontends)
+- **React 19** — activities micro-frontend (cross-framework MFE)
+- **Nx 22** — monorepo tooling, build orchestration
+- **Webpack Module Federation** — runtime micro-frontend composition
+- **PrimNG 21** — Angular UI components
+- **OpenStreetMap / Overpass API** — restaurant and attraction data (no API key required)
+
+## Features
+
+- Search any city worldwide with autocomplete (Open-Meteo geocoding)
+- Browse nearby **restaurants** with cuisine types and ratings
+- Explore **attractions, museums, and viewpoints** with Wikimedia Commons photos
+- Selected city persists across navigation tabs via `localStorage`
+- Angular shell dynamically loads a React remote at runtime (cross-framework MFE)
+
+## Architecture
+
+```
+apps/
+  shell/          # Angular host — orchestrates all remotes (port 4200)
+  homepage/       # Angular remote — landing page (port 4201)
+  destinations/   # Angular remote — city search & featured destinations (port 4202)
+  food/           # Angular remote — restaurants (port 4203)
+  activities/     # React remote — attractions & activities (port 4204)
+libs/
+  shared/utils/   # Shared types and services
 ```
 
-## Run tasks
+The **activities** app is a React 19 micro-frontend loaded via script tag injection rather than
+Module Federation, solving the CommonJS/ES-module boundary between Angular's enhanced MF runtime
+and React's standard webpack container.
 
-To build the library use:
+## Getting Started
 
-```sh
-npx nx build pkg1
+### Prerequisites
+
+```bash
+node >= 20
+npm >= 10
 ```
 
-To run any task with Nx use:
+### Install
 
-```sh
-npx nx <target> <project-name>
+```bash
+git clone <repo-url>
+cd wanderbite
+npm install
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Run all apps together
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
-
-```
-npx nx release
+```bash
+npx nx run-many -t serve -p shell homepage destinations food activities --parallel=5
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+Then open http://localhost:4200
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Run each app independently
 
-## Keep TypeScript project references up to date
+| App          | Command                     | URL                   |
+| ------------ | --------------------------- | --------------------- |
+| Shell        | `npx nx serve shell`        | http://localhost:4200 |
+| Homepage     | `npx nx serve homepage`     | http://localhost:4201 |
+| Destinations | `npx nx serve destinations` | http://localhost:4202 |
+| Restaurants  | `npx nx serve food`         | http://localhost:4203 |
+| Activities   | `npx nx serve activities`   | http://localhost:4204 |
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+> **Note:** Start remotes before the shell. Recommended order: `homepage` → `destinations` → `food` → `activities` → `shell`
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+### Build for production
 
-```sh
-npx nx sync
+```bash
+# Build all apps
+npx nx run-many -t build -p shell homepage destinations food activities --parallel=5
+
+# Build a single app
+npx nx build food --configuration=production
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+### Clear cache (if you see phantom errors after a fix)
 
-```sh
-npx nx sync:check
+```bash
+npm exec nx reset
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+## APIs Used
 
-## Nx Cloud
+All APIs are free and require no API key.
 
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+| API                          | Purpose                         |
+| ---------------------------- | ------------------------------- |
+| Open-Meteo Geocoding         | City autocomplete search        |
+| Overpass API (OpenStreetMap) | Restaurants and attraction data |
+| Wikimedia Commons            | Activity card photos            |
+| Unsplash (static URLs)       | Restaurant placeholder images   |
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Deployment
 
-### Set up CI (non-Github Actions CI)
-
-**Note:** This is only required if your CI provider is not GitHub Actions.
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- Angular remotes (homepage, destinations) → **Netlify**
+- React + Angular remotes (food, activities) → **Vercel**
+- Shell → **Netlify**
