@@ -3,6 +3,7 @@ import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { Location, DecimalPipe, TitleCasePipe } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { Restaurant, RestaurantService } from '../../restaurant.service';
+import { CityStorageService } from '@org/data-access';
 
 @Component({
   selector: 'app-restaurants',
@@ -14,6 +15,7 @@ export class RestaurantsComponent implements OnInit {
   private router = inject(Router);
   private location = inject(Location);
   private restaurantService = inject(RestaurantService);
+  private cityStorage = inject(CityStorageService);
   private cdr = inject(ChangeDetectorRef);
 
   city = '';
@@ -38,12 +40,11 @@ export class RestaurantsComponent implements OnInit {
 
     // Fall back to last selected city from localStorage (when navigating via nav bar)
     if (!this.lat || !this.lon) {
-      const saved = localStorage.getItem('wb_selected_city');
-      if (saved) {
-        const c = JSON.parse(saved);
-        this.city = c.name ?? '';
-        this.lat = c.lat ?? 0;
-        this.lon = c.lon ?? 0;
+      const c = this.cityStorage.read();
+      if (c) {
+        this.city = c.name;
+        this.lat = c.lat;
+        this.lon = c.lon;
       }
     }
 

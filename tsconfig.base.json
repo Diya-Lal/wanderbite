@@ -18,7 +18,9 @@
       "destinations/Routes": [
         "apps/destinations/src/app/remote-entry/entry.routes.ts"
       ],
-      "food/Routes": ["apps/food/src/app/remote-entry/entry.routes.ts"]
+      "food/Routes": ["apps/food/src/app/remote-entry/entry.routes.ts"],
+      "@org/utils": ["libs/shared/utils/src/index.ts"],
+      "@org/data-access": ["libs/shared/data-access/src/index.ts"]
     }
   }
 }

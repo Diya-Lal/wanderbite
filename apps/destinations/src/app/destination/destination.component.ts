@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { CityResult, CitySearchService } from '../city-search.service';
+import { CityStorageService } from '@org/data-access';
 
 export interface Destination {
   city: string;
@@ -21,8 +22,6 @@ export const FEATURED_DESTINATIONS: Destination[] = [
   { city: 'Reykjavik', country: 'Iceland',   region: 'Europe', lat: 64.1265,  lon: -21.8174 },
 ];
 
-const CITY_STORAGE_KEY = 'wb_selected_city';
-
 @Component({
   selector: 'app-destination',
   imports: [FormsModule, RouterModule, AutoComplete],
@@ -31,6 +30,7 @@ const CITY_STORAGE_KEY = 'wb_selected_city';
 })
 export class DestinationComponent {
   private citySearch = inject(CitySearchService);
+  private cityStorage = inject(CityStorageService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
@@ -40,8 +40,7 @@ export class DestinationComponent {
   featured = FEATURED_DESTINATIONS;
 
   constructor() {
-    const saved = localStorage.getItem(CITY_STORAGE_KEY);
-    if (saved) this.selectedCity = JSON.parse(saved);
+    this.selectedCity = this.cityStorage.read() as CityResult | null;
   }
 
   regionIcons: Record<string, string> = {
@@ -71,13 +70,13 @@ export class DestinationComponent {
 
   onCitySelect(): void {
     if (this.selectedCity?.lat) {
-      localStorage.setItem(CITY_STORAGE_KEY, JSON.stringify(this.selectedCity));
+      this.cityStorage.write(this.selectedCity);
     }
   }
 
   onCityClear(): void {
     this.selectedCity = null;
-    localStorage.removeItem(CITY_STORAGE_KEY);
+    this.cityStorage.clear();
   }
 
   selectFeatured(dest: Destination): void {
@@ -90,7 +89,7 @@ export class DestinationComponent {
       lat: dest.lat,
       lon: dest.lon,
     };
-    localStorage.setItem(CITY_STORAGE_KEY, JSON.stringify(this.selectedCity));
+    this.cityStorage.write(this.selectedCity);
   }
 
   get selectedDestinationName(): string {

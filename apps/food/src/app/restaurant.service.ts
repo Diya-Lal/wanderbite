@@ -50,6 +50,16 @@ const CUISINE_IMAGES: Record<string, string> = {
   default:     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80',
 };
 
+function sanitizeWebsiteUrl(url: string | undefined): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    return ['https:', 'http:'].includes(parsed.protocol) ? url : null;
+  } catch {
+    return null;
+  }
+}
+
 function getCuisineImage(cuisine: string | undefined): string {
   if (!cuisine) return CUISINE_IMAGES['default'];
   const key = cuisine.toLowerCase().split(';')[0].trim();
@@ -106,7 +116,7 @@ export class RestaurantService {
             address: buildAddress(el.tags),
             rating: parseRating(el.tags),
             openingHours: el.tags['opening_hours'] ?? null,
-            website: el.tags['website'] ?? el.tags['contact:website'] ?? null,
+            website: sanitizeWebsiteUrl(el.tags['website'] ?? el.tags['contact:website']),
             phone: el.tags['phone'] ?? el.tags['contact:phone'] ?? null,
             imageUrl: getCuisineImage(el.tags['cuisine']),
             lat: el.lat,

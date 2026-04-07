@@ -5,7 +5,9 @@ import {
   OnInit,
   ViewChild,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
+import { CityStorageService } from '@org/data-access';
 
 const ACTIVITIES_REMOTE =
   window.location.hostname === 'localhost'
@@ -21,6 +23,7 @@ const ACTIVITIES_REMOTE =
 export class ActivitiesPageComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
 
+  private cityStorage = inject(CityStorageService);
   private unmount?: () => void;
 
   ngOnInit(): void {
@@ -29,14 +32,13 @@ export class ActivitiesPageComponent implements OnInit, OnDestroy {
     let lat = parseFloat(params.get('lat') ?? '0');
     let lon = parseFloat(params.get('lon') ?? '0');
 
-    // Fall back to last selected city from localStorage (when navigating via nav bar)
+    // Fall back to last selected city from sessionStorage (when navigating via nav bar)
     if (!lat || !lon) {
-      const saved = localStorage.getItem('wb_selected_city');
-      if (saved) {
-        const c = JSON.parse(saved);
-        city = c.name ?? '';
-        lat = c.lat ?? 0;
-        lon = c.lon ?? 0;
+      const c = this.cityStorage.read();
+      if (c) {
+        city = c.name;
+        lat = c.lat;
+        lon = c.lon;
       }
     }
 
