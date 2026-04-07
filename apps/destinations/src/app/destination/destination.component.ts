@@ -25,6 +25,15 @@ export const FEATURED_DESTINATIONS: Destination[] = [
   { city: 'Reykjavik', country: 'Iceland',   region: 'Europe', lat: 64.1265,  lon: -21.8174 },
 ];
 
+const REGION_ICONS: Record<string, string> = {
+  Europe: '🏰',
+  Asia: '🌸',
+  Americas: '🌎',
+  Africa: '🌍',
+  Oceania: '🌊',
+  'Middle East': '🕌',
+};
+
 @Component({
   selector: 'app-destination',
   imports: [FormsModule, RouterModule, AutoComplete],
@@ -58,14 +67,7 @@ export class DestinationComponent {
     });
   }
 
-  regionIcons: Record<string, string> = {
-    Europe: '🏰',
-    Asia: '🌸',
-    Americas: '🌎',
-    Africa: '🌍',
-    Oceania: '🌊',
-    'Middle East': '🕌',
-  };
+  readonly regionIcons = REGION_ICONS;
 
   search(event: AutoCompleteCompleteEvent): void {
     this.searching = true;

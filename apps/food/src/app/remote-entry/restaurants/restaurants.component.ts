@@ -80,7 +80,8 @@ export class RestaurantsComponent implements OnInit {
   openMap(restaurant: Restaurant): void {
     window.open(
       `https://www.openstreetmap.org/?mlat=${restaurant.lat}&mlon=${restaurant.lon}&zoom=17`,
-      '_blank'
+      '_blank',
+      'noopener,noreferrer'
     );
   }
 }

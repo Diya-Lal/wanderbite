@@ -1,0 +1,1 @@
+export const SEARCH_RADIUS_METRES = 5000;

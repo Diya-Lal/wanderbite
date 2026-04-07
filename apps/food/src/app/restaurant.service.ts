@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { SEARCH_RADIUS_METRES } from '@org/utils';
 
 export interface Restaurant {
   id: number;
@@ -95,7 +96,7 @@ export class RestaurantService {
   ];
 
   getRestaurants(lat: number, lon: number): Observable<Restaurant[]> {
-    const radius = 5000;
+    const radius = SEARCH_RADIUS_METRES;
     const query = `[out:json][timeout:25];node["amenity"="restaurant"](around:${radius},${lat},${lon});out 50;`;
     const body = `data=${encodeURIComponent(query)}`;
     const options = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };

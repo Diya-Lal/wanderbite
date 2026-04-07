@@ -18,6 +18,15 @@ interface Props {
   standalone?: boolean;
 }
 
+interface OverpassElement {
+  id: number;
+  lat: number;
+  lon: number;
+  tags: Record<string, string>;
+}
+
+const SEARCH_RADIUS_METRES = 5000;
+
 const TYPE_LABELS: Record<string, string> = {
   attraction: 'Attraction',
   museum: 'Museum',
@@ -68,8 +77,8 @@ const MIRRORS = [
   'https://overpass-api.de/api/interpreter',
 ];
 
-async function fetchActivities(lat: number, lon: number): Promise<Activity[]> {
-  const r = 5000;
+async function fetchActivities(lat: number, lon: number, signal: AbortSignal): Promise<Activity[]> {
+  const r = SEARCH_RADIUS_METRES;
   const query = `[out:json][timeout:15];(
     node["tourism"="attraction"](around:${r},${lat},${lon});
     node["tourism"="museum"](around:${r},${lat},${lon});
@@ -84,17 +93,18 @@ async function fetchActivities(lat: number, lon: number): Promise<Activity[]> {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body,
+        signal,
       });
       if (!res.ok) continue;
       const data = await res.json();
       return (data.elements ?? [])
-        .filter((el: any) => el.tags?.name)
-        .map((el: any) => {
-          const tourismType = el.tags.tourism ?? el.tags.leisure ?? el.tags.historic ?? 'attraction';
-          const wikiTag = el.tags.wikimedia_commons ?? el.tags.image ?? '';
+        .filter((el: OverpassElement) => el.tags?.name)
+        .map((el: OverpassElement) => {
+          const tourismType = el.tags['tourism'] ?? el.tags['leisure'] ?? el.tags['historic'] ?? 'attraction';
+          const wikiTag = el.tags['wikimedia_commons'] ?? el.tags['image'] ?? '';
           return {
             id: el.id,
-            name: el.tags.name,
+            name: el.tags['name'],
             type: tourismType,
             address: [el.tags['addr:street'], el.tags['addr:city']].filter(Boolean).join(', '),
             lat: el.lat,
@@ -116,17 +126,19 @@ export default function App({ city, lat, lon }: Props) {
 
   useEffect(() => {
     if (!lat || !lon) return;
+    const controller = new AbortController();
     setLoading(true);
     setError(false);
-    fetchActivities(lat, lon)
+    fetchActivities(lat, lon, controller.signal)
       .then(setActivities)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .catch(() => { if (!controller.signal.aborted) setError(true); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, [lat, lon]);
 
   const goBack = () => window.history.back();
   const openMap = (a: Activity) =>
-    window.open(`https://www.openstreetmap.org/?mlat=${a.lat}&mlon=${a.lon}&zoom=16`, '_blank');
+    window.open(`https://www.openstreetmap.org/?mlat=${a.lat}&mlon=${a.lon}&zoom=16`, '_blank', 'noopener,noreferrer');
 
   return (
     <div className="ac-page">

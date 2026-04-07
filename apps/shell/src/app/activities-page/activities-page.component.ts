@@ -9,14 +9,12 @@ import {
   inject,
 } from '@angular/core';
 import { CityStorageService } from '@org/data-access';
-
-const ACTIVITIES_REMOTE =
-  window.location.hostname === 'localhost'
-    ? 'http://localhost:4204/remoteEntry.js'
-    : 'https://activities-gamma.vercel.app/remoteEntry.js';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-activities-page',
+  standalone: true,
+  imports: [],
   template: `<div #container class="activities-host"></div>`,
   styles: [`.activities-host { display: block; width: 100%; min-height: 100vh; }`],
   encapsulation: ViewEncapsulation.None,
@@ -75,7 +73,7 @@ export class ActivitiesPageComponent implements OnInit, OnDestroy {
 
     // Load remoteEntry.js then mount
     const script = document.createElement('script');
-    script.src = ACTIVITIES_REMOTE;
+    script.src = environment.activitiesRemote;
     script.onload = () => doMount();
     script.onerror = (e) => console.error('Failed to load activities remote', e);
     document.head.appendChild(script);
