@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   OnDestroy,
@@ -19,6 +20,7 @@ const ACTIVITIES_REMOTE =
   template: `<div #container class="activities-host"></div>`,
   styles: [`.activities-host { display: block; width: 100%; min-height: 100vh; }`],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivitiesPageComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
@@ -56,6 +58,10 @@ export class ActivitiesPageComponent implements OnInit, OnDestroy {
         .get('./mount')
         .then((factory: () => { mount: (el: HTMLElement, city: string, lat: number, lon: number) => () => void }) => {
           const mod = factory();
+          if (typeof mod?.mount !== 'function') {
+            console.error('Activities remote: mount() not found');
+            return;
+          }
           this.unmount = mod.mount(this.container.nativeElement, city, lat, lon);
         })
         .catch((e: unknown) => console.error('Activities mount failed', e));

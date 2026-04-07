@@ -9,6 +9,7 @@ export interface Restaurant {
   cuisine: string;
   address: string;
   rating: number | null;
+  stars: number[];
   openingHours: string | null;
   website: string | null;
   phone: string | null;
@@ -115,6 +116,7 @@ export class RestaurantService {
             cuisine: el.tags['cuisine']?.split(';')[0]?.trim() ?? 'Restaurant',
             address: buildAddress(el.tags),
             rating: parseRating(el.tags),
+            stars: (() => { const r = Math.round(parseRating(el.tags) ?? 0); return Array.from({ length: 5 }, (_, i) => i + 1 <= r ? 1 : 0); })(),
             openingHours: el.tags['opening_hours'] ?? null,
             website: sanitizeWebsiteUrl(el.tags['website'] ?? el.tags['contact:website']),
             phone: el.tags['phone'] ?? el.tags['contact:phone'] ?? null,

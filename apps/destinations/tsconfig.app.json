@@ -13,5 +13,10 @@
     "jest.config.cts",
     "src/test-setup.ts"
   ],
-  "files": ["src/app/remote-entry/entry.routes.ts"]
+  "files": ["src/app/remote-entry/entry.routes.ts"],
+  "references": [
+    {
+      "path": "../../libs/shared/data-access"
+    }
+  ]
 }

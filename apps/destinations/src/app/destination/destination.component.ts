@@ -1,6 +1,9 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { CityResult, CitySearchService } from '../city-search.service';
 import { CityStorageService } from '@org/data-access';
@@ -27,12 +30,15 @@ export const FEATURED_DESTINATIONS: Destination[] = [
   imports: [FormsModule, RouterModule, AutoComplete],
   templateUrl: './destination.component.html',
   styleUrl: './destination.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DestinationComponent {
   private citySearch = inject(CitySearchService);
   private cityStorage = inject(CityStorageService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+  private searchSubject = new Subject<string>();
 
   selectedCity: CityResult | null = null;
   suggestions: CityResult[] = [];
@@ -41,6 +47,15 @@ export class DestinationComponent {
 
   constructor() {
     this.selectedCity = this.cityStorage.read() as CityResult | null;
+
+    this.searchSubject.pipe(
+      debounceTime(150),
+      switchMap((query) => this.citySearch.search(query)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (results) => { this.suggestions = results; this.searching = false; this.cdr.detectChanges(); },
+      error: () => { this.suggestions = []; this.searching = false; this.cdr.detectChanges(); },
+    });
   }
 
   regionIcons: Record<string, string> = {
@@ -54,18 +69,7 @@ export class DestinationComponent {
 
   search(event: AutoCompleteCompleteEvent): void {
     this.searching = true;
-    this.citySearch.search(event.query).subscribe({
-      next: (results) => {
-        this.suggestions = results;
-        this.searching = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.suggestions = [];
-        this.searching = false;
-        this.cdr.detectChanges();
-      },
-    });
+    this.searchSubject.next(event.query);
   }
 
   onCitySelect(): void {

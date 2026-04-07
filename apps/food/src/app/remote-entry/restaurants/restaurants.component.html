@@ -102,7 +102,7 @@
 
                 @if (r.rating) {
                   <div class="rs-card__stars">
-                    @for (s of getStars(r.rating); track $index) {
+                    @for (s of r.stars; track $index) {
                       <span class="rs-card__star" [class.rs-card__star--filled]="s === 1">★</span>
                     }
                     <span class="rs-card__rating-val">{{ r.rating | number: '1.1-1' }}</span>

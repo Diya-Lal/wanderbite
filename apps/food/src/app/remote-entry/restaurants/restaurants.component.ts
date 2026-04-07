@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { Location, DecimalPipe, TitleCasePipe } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -10,6 +11,7 @@ import { CityStorageService } from '@org/data-access';
   imports: [RouterModule, DecimalPipe, TitleCasePipe],
   templateUrl: './restaurants.component.html',
   styleUrl: './restaurants.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestaurantsComponent implements OnInit {
   private router = inject(Router);
@@ -17,6 +19,7 @@ export class RestaurantsComponent implements OnInit {
   private restaurantService = inject(RestaurantService);
   private cityStorage = inject(CityStorageService);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   city = '';
   lat = 0;
@@ -28,7 +31,7 @@ export class RestaurantsComponent implements OnInit {
   ngOnInit(): void {
     this.readQueryParams();
     this.router.events
-      .pipe(filter((e) => e instanceof NavigationEnd))
+      .pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.readQueryParams());
   }
 
@@ -56,7 +59,7 @@ export class RestaurantsComponent implements OnInit {
   private fetchRestaurants(): void {
     this.loading = true;
     this.error = false;
-    this.restaurantService.getRestaurants(this.lat, this.lon).subscribe({
+    this.restaurantService.getRestaurants(this.lat, this.lon).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (results) => {
         this.restaurants = results;
         this.loading = false;
@@ -68,11 +71,6 @@ export class RestaurantsComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
-  }
-
-  getStars(rating: number | null): number[] {
-    const r = Math.round(rating ?? 0);
-    return Array.from({ length: 5 }, (_, i) => i + 1).map((i) => (i <= r ? 1 : 0));
   }
 
   goBack(): void {
