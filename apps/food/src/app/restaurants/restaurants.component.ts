@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { Location, DecimalPipe, TitleCasePipe } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { RestaurantService } from '../../restaurant.service';
-import { Restaurant } from '../../types/restaurant.types';
+import { RestaurantService } from '../restaurant.service';
+import { Restaurant } from '../types/restaurant.types';
 import { CityStorageService } from '@org/data-access';
 
 @Component({

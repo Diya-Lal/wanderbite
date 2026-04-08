@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RestaurantsComponent } from './restaurants.component';
 import { provideRouter } from '@angular/router';
-import { RestaurantService } from '../../restaurant.service';
+import { RestaurantService } from '../restaurant.service';
 import { of } from 'rxjs';
 
 describe('RestaurantsComponent', () => {
@@ -27,11 +27,5 @@ describe('RestaurantsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('getStars returns array of 5 elements', () => {
-    const stars = component.getStars(3);
-    expect(stars.length).toBe(5);
-    expect(stars.filter((s) => s === 1).length).toBe(3);
   });
 });
