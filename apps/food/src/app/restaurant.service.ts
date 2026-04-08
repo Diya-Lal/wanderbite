@@ -55,8 +55,7 @@ export class RestaurantService {
     );
 
     return requests[0].pipe(
-      catchError(() => requests[1]),
-      catchError(() => requests[2]),
+      catchError(() => requests[1].pipe(catchError(() => requests[2]))),
       map((res) =>
         (res.elements ?? [])
           .filter((el: OverpassElement) => el.tags?.['name'])

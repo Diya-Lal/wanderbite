@@ -12,6 +12,7 @@ import { CityStorageService } from '@org/data-access';
 
 @Component({
   selector: 'app-destination',
+  standalone: true,
   imports: [FormsModule, RouterModule, AutoComplete],
   templateUrl: './destination.component.html',
   styleUrl: './destination.component.scss',
