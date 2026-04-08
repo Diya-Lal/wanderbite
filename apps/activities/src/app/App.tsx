@@ -1,93 +1,31 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-
-interface Activity {
-  id: number;
-  name: string;
-  type: string;
-  address: string;
-  lat: number;
-  lon: number;
-  wikimediaUrl?: string;
-}
-
-interface Props {
-  city: string;
-  lat: number;
-  lon: number;
-  standalone?: boolean;
-}
-
-interface OverpassElement {
-  id: number;
-  lat: number;
-  lon: number;
-  tags: Record<string, string>;
-}
-
-const SEARCH_RADIUS_METRES = 5000;
-
-const TYPE_LABELS: Record<string, string> = {
-  attraction: 'Attraction',
-  museum: 'Museum',
-  viewpoint: 'Viewpoint',
-  zoo: 'Zoo',
-  park: 'Park',
-  monument: 'Monument',
-  gallery: 'Gallery',
-  theme_park: 'Theme Park',
-  historic: 'Historic Site',
-};
-
-const TYPE_ICONS: Record<string, string> = {
-  attraction: '✦',
-  museum:     '🏛',
-  viewpoint:  '🔭',
-  zoo:        '🦁',
-  park:       '🌿',
-  monument:   '🗿',
-  gallery:    '🖼',
-  theme_park: '🎡',
-  historic:   '⚔️',
-  default:    '📍',
-};
-
-const TYPE_GRADIENTS: Record<string, string> = {
-  attraction: 'linear-gradient(135deg, #1a1228 0%, #2d1f4e 100%)',
-  museum:     'linear-gradient(135deg, #0f1a2e 0%, #1e3a5f 100%)',
-  viewpoint:  'linear-gradient(135deg, #0d1f1a 0%, #1a3d30 100%)',
-  zoo:        'linear-gradient(135deg, #1a1a0d 0%, #3d3010 100%)',
-  park:       'linear-gradient(135deg, #0d1a10 0%, #1a3d20 100%)',
-  monument:   'linear-gradient(135deg, #1a1212 0%, #3d1a1a 100%)',
-  gallery:    'linear-gradient(135deg, #1a0f1a 0%, #3d1f3d 100%)',
-  theme_park: 'linear-gradient(135deg, #1a0d1a 0%, #3d1050 100%)',
-  historic:   'linear-gradient(135deg, #1a1208 0%, #3d2a08 100%)',
-  default:    'linear-gradient(135deg, #0f1726 0%, #1e2f4e 100%)',
-};
+import { Activity, ActivityAppProps, OverpassElement } from './types/activity.types';
+import {
+  OVERPASS_MIRRORS,
+  OVERPASS_TIMEOUT,
+  OVERPASS_RESULTS_LIMIT,
+  SEARCH_RADIUS_METRES,
+  TYPE_LABELS,
+  TYPE_ICONS,
+  TYPE_GRADIENTS,
+} from './constants/activity.constants';
 
 function wikimediaThumb(tag: string): string {
-  // tag may be "File:Foo.jpg" or just "Foo.jpg"
   const file = tag.replace(/^File:/i, '').replace(/ /g, '_');
   return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=600`;
 }
 
-const MIRRORS = [
-  'https://overpass.openstreetmap.fr/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter',
-  'https://overpass-api.de/api/interpreter',
-];
-
 async function fetchActivities(lat: number, lon: number, signal: AbortSignal): Promise<Activity[]> {
-  const r = SEARCH_RADIUS_METRES;
-  const query = `[out:json][timeout:15];(
-    node["tourism"="attraction"](around:${r},${lat},${lon});
-    node["tourism"="museum"](around:${r},${lat},${lon});
-    node["tourism"="viewpoint"](around:${r},${lat},${lon});
-  );out 20;`;
+  const query = `[out:json][timeout:${OVERPASS_TIMEOUT}];(
+    node["tourism"="attraction"](around:${SEARCH_RADIUS_METRES},${lat},${lon});
+    node["tourism"="museum"](around:${SEARCH_RADIUS_METRES},${lat},${lon});
+    node["tourism"="viewpoint"](around:${SEARCH_RADIUS_METRES},${lat},${lon});
+  );out ${OVERPASS_RESULTS_LIMIT};`;
 
   const body = `data=${encodeURIComponent(query)}`;
 
-  for (const url of MIRRORS) {
+  for (const url of OVERPASS_MIRRORS) {
     try {
       const res = await fetch(url, {
         method: 'POST',
@@ -119,7 +57,7 @@ async function fetchActivities(lat: number, lon: number, signal: AbortSignal): P
   return [];
 }
 
-export default function App({ city, lat, lon }: Props) {
+export default function App({ city, lat, lon }: ActivityAppProps) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
