@@ -17,7 +17,24 @@
       </svg>
       Back
     </button>
+    <button class="rs-nav__hamburger" [class.is-open]="menuOpen()" (click)="toggleMenu()" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  @if (menuOpen()) {
+    <div class="rs-nav__overlay" (click)="toggleMenu()"></div>
+    <nav class="rs-nav__mobile">
+      <a routerLink="/destination" class="rs-nav__mobile-link" (click)="toggleMenu()">Destinations</a>
+      <a routerLink="/food" routerLinkActive="active" class="rs-nav__mobile-link" (click)="toggleMenu()">Restaurants</a>
+      <a routerLink="/activities" class="rs-nav__mobile-link" (click)="toggleMenu()">Activities</a>
+      <button class="rs-nav__mobile-back" (click)="goBack(); toggleMenu()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back
+      </button>
+    </nav>
+  }
 
   <!-- ── Hero Header ── -->
   <header class="rs-header">

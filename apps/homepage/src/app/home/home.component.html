@@ -6,31 +6,22 @@
       <span class="wb-nav__logo-text">WanderBite</span>
     </a>
     <ul class="wb-nav__links">
-      <li>
-        <a
-          routerLink="/destination"
-          routerLinkActive="active"
-          class="wb-nav__link"
-        >
-          Destinations
-        </a>
-      </li>
-      <li>
-        <a routerLink="/food" routerLinkActive="active" class="wb-nav__link">
-          Restaurants
-        </a>
-      </li>
-      <li>
-        <a
-          routerLink="/activities"
-          routerLinkActive="active"
-          class="wb-nav__link"
-        >
-          Activities
-        </a>
-      </li>
+      <li><a routerLink="/destination" routerLinkActive="active" class="wb-nav__link">Destinations</a></li>
+      <li><a routerLink="/food" routerLinkActive="active" class="wb-nav__link">Restaurants</a></li>
+      <li><a routerLink="/activities" routerLinkActive="active" class="wb-nav__link">Activities</a></li>
     </ul>
+    <button class="wb-nav__hamburger" [class.is-open]="menuOpen()" (click)="toggleMenu()" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  @if (menuOpen()) {
+    <div class="wb-nav__overlay" (click)="toggleMenu()"></div>
+    <nav class="wb-nav__mobile">
+      <a routerLink="/destination" routerLinkActive="active" class="wb-nav__mobile-link" (click)="toggleMenu()">Destinations</a>
+      <a routerLink="/food" routerLinkActive="active" class="wb-nav__mobile-link" (click)="toggleMenu()">Restaurants</a>
+      <a routerLink="/activities" routerLinkActive="active" class="wb-nav__mobile-link" (click)="toggleMenu()">Activities</a>
+    </nav>
+  }
 
   <!-- ── Hero ── -->
   <section class="wb-hero">

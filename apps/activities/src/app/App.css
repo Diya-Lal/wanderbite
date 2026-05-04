@@ -109,6 +109,96 @@
   border-color: rgba(201,169,110,0.4);
 }
 
+.ac-nav__hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 301;
+}
+
+.ac-nav__hamburger span {
+  display: block;
+  width: 24px;
+  height: 1.5px;
+  background: var(--white);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.ac-nav__hamburger.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.ac-nav__hamburger.is-open span:nth-child(2) { opacity: 0; }
+.ac-nav__hamburger.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.ac-nav__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 13, 26, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 299;
+}
+
+.ac-nav__mobile {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(280px, 80vw);
+  background: #080d1a;
+  border-left: 1px solid rgba(201, 169, 110, 0.18);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  padding: 5rem 2rem 2rem;
+  animation: ac-slideIn 0.25s ease;
+}
+
+@keyframes ac-slideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.ac-nav__mobile-link {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid rgba(201, 169, 110, 0.12);
+  transition: color 0.2s;
+}
+
+.ac-nav__mobile-link:hover,
+.ac-nav__mobile-link--active { color: var(--gold); }
+
+.ac-nav__mobile-back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ac-nav__mobile-back:hover {
+  color: var(--gold);
+  border-color: rgba(201, 169, 110, 0.4);
+}
+
 /* ── Header ─────────────────────────────────── */
 .ac-header {
   position: relative;
@@ -413,7 +503,10 @@
 }
 
 @media (max-width: 768px) {
-  .ac-nav  { padding: 1.25rem 1.5rem; }
+  .ac-nav { padding: 1.25rem 1.5rem; }
+  .ac-nav__links { display: none; }
+  .ac-nav__back { display: none; }
+  .ac-nav__hamburger { display: flex; }
   .ac-content { padding: 3rem 1.5rem; }
   .ac-header__content { padding: 6rem 1.5rem 3rem; }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -25,6 +25,9 @@ export class DestinationComponent {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private searchSubject = new Subject<string>();
+
+  menuOpen = signal(false);
+  toggleMenu() { this.menuOpen.update(v => !v); }
 
   selectedCity: CityResult | null = null;
   suggestions: CityResult[] = [];

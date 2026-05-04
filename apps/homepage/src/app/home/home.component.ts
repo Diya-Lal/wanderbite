@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -6,5 +6,9 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent {}
+export class HomeComponent {
+  menuOpen = signal(false);
+  toggleMenu() { this.menuOpen.update(v => !v); }
+}

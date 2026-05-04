@@ -61,6 +61,7 @@ export default function App({ city, lat, lon }: ActivityAppProps) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!lat || !lon) return;
@@ -97,7 +98,26 @@ export default function App({ city, lat, lon }: ActivityAppProps) {
           </svg>
           Back
         </button>
+        <button className={`ac-nav__hamburger${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(v => !v)} aria-label="Toggle navigation">
+          <span /><span /><span />
+        </button>
       </nav>
+      {menuOpen && (
+        <>
+          <div className="ac-nav__overlay" onClick={() => setMenuOpen(false)} />
+          <nav className="ac-nav__mobile">
+            <a href="/destination" className="ac-nav__mobile-link" onClick={() => setMenuOpen(false)}>Destinations</a>
+            <a href="/food" className="ac-nav__mobile-link" onClick={() => setMenuOpen(false)}>Restaurants</a>
+            <a href="/activities" className="ac-nav__mobile-link ac-nav__mobile-link--active" onClick={() => setMenuOpen(false)}>Activities</a>
+            <button className="ac-nav__mobile-back" onClick={() => { goBack(); setMenuOpen(false); }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Back
+            </button>
+          </nav>
+        </>
+      )}
 
       {/* Hero */}
       <header className="ac-header">

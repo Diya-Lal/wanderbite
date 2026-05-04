@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { Location, DecimalPipe, TitleCasePipe } from '@angular/common';
@@ -21,6 +21,9 @@ export class RestaurantsComponent implements OnInit {
   private cityStorage = inject(CityStorageService);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
+
+  menuOpen = signal(false);
+  toggleMenu() { this.menuOpen.update(v => !v); }
 
   city = '';
   lat = 0;
