@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build:shell": "nx build shell --configuration=production",
-    "build:homepage": "nx build homepage --configuration=production",
-    "build:destinations": "nx build destinations --configuration=production"
+    "build:shell": "NX_NO_CLOUD=true nx build shell --configuration=production",
+    "build:homepage": "NX_NO_CLOUD=true nx build homepage --configuration=production",
+    "build:destinations": "NX_NO_CLOUD=true nx build destinations --configuration=production"
   },
   "private": true,
   "devDependencies": {
